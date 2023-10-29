@@ -12,16 +12,21 @@ defmodule TopSecret do
     String.slice(val, 0, length(args))
   end
 
-  def pull_def({:def, _, [head | _]}) do
-    {value, _, args} = head
+  def pull_name({:when, _, [head | _]}) do
+    pull_name(head)
+  end
+
+  def pull_name({value, _, args}) do
     Atom.to_string(value)
     |> args_substring(args)
   end
 
+  def pull_def({:def, _, [head | _]}) do
+    pull_name(head)
+  end
+
   def pull_def({:defp, _, [head | _]}) do
-    {value, _, args} = head
-    Atom.to_string(value)
-    |> args_substring(args)
+    pull_name(head)
   end
 
   def pull_def(_) do
@@ -36,6 +41,10 @@ defmodule TopSecret do
   end
 
   def decode_secret_message(string) do
-    # Please implement the decode_secret_message/1 function
+    ast = to_ast(string)
+    {_, acc} = Macro.prewalk(ast, [], &decode_secret_message_part/2)
+    acc
+    |> Enum.reverse()
+    |> Enum.join("")
   end
 end

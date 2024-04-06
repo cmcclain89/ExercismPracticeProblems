@@ -22,16 +22,22 @@ defmodule DNA do
   end
 
   def encode(dna) do
-    do_encode(dna, 1)
+    do_encode(dna, <<>>)
   end
 
   defp do_encode([], acc), do: acc
 
   defp do_encode([head | tail], acc) do
-    <<encode_nucleotide(to_charlist(head)), do_encode(tail, acc + 1)::binary>>
+    do_encode(tail, <<acc::bitstring, encode_nucleotide(head)::4>>)
   end
 
   def decode(dna) do
-    # Please implement the decode/1 function
+    do_decode(dna, ~c'')
+  end
+
+  defp do_decode(<<>>, acc), do: acc
+
+  defp do_decode(<<head::4, rest::bitstring>>, acc) do
+    do_decode(rest, acc ++ [decode_nucleotide(head)])
   end
 end

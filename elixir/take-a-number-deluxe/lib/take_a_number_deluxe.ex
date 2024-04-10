@@ -68,7 +68,9 @@ defmodule TakeANumberDeluxe do
 
   @impl GenServer
   def handle_call(:reset, _from, state) do
-    {:ok, new_state} = TakeANumberDeluxe.State.new(state.min_number, state.max_number)
+    {:ok, new_state} =
+      TakeANumberDeluxe.State.new(state.min_number, state.max_number, state.auto_shutdown_timeout)
+
     {:reply, :ok, new_state, state.auto_shutdown_timeout}
   end
 
